@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Booking Lapangan Bola</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .header h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        
+        .nav {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            align-items: center;
+        }
+        
+        .nav-spacer {
+            flex: 1;
+        }
+        
+        .nav button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .nav button:hover {
+            background: #5568d3;
+        }
+        
+        .nav button.active {
+            background: #764ba2;
+        }
+        
+        .page {
+            display: none;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .page.active {
+            display: block;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        
+        .btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+        
+        .btn:hover {
+            background: #5568d3;
+        }
+        
+        .btn-danger {
+            background: #e74c3c;
+        }
+        
+        .btn-danger:hover {
+            background: #c0392b;
+        }
+        
+        .lapangan-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .lapangan-card {
+            border: 2px solid #667eea;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .lapangan-card h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        
+        .lapangan-card p {
+            margin: 5px 0;
+            color: #666;
+        }
+        
+        .lapangan-card .price {
+            font-size: 24px;
+            color: #27ae60;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        
+        .booking-list {
+            margin-top: 20px;
+        }
+        
+        .booking-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .booking-item h4 {
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .booking-item p {
+            margin: 3px 0;
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .status-active {
+            color: #27ae60;
+            font-weight: bold;
+        }
+        
+        .status-cancelled {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+        
+        .user-info {
+            background: #f8f9fa;
+            padding: 10px 15px;
+            border-radius: 5px;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .login-box {
+            max-width: 400px;
+            margin: 50px auto;
+        }
+        
+        .alert {
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
+        
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Sistem Booking Lapangan Bola</h1>
+            <p>Platform pemesanan lapangan yang mudah dan cepat</p>
+            
+            <div class="nav" id="nav">
+        
+            </div>
+        </div>
+        
+        <!-- Login  -->
+        <div class="page active" id="loginPage">
+            <div class="login-box">
+                <h2>Login</h2>
+                <div class="form-group">
+                    <label>Username</label>
+                    <input type="text" id="loginUsername" placeholder="Masukkan username">
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="loginPassword" placeholder="Masukkan password">
+                </div>
+                <button class="btn" onclick="login()">Login</button>
+                <p style="margin-top: 15px;">Demo: admin/admin123 atau user1/user123</p>
+            </div>
+        </div>
+        
+        <!-- Beranda-->
+        <div class="page" id="homePage">
+            <h2>Daftar Lapangan</h2>
+            <div class="lapangan-grid" id="lapanganGrid"></div>
+        </div>
+        
+        <!-- Hakaman Booking -->
+        <div class="page" id="bookingPage">
+            <h2>Booking Lapangan</h2>
+            <div class="form-group">
+                <label>Pilih Lapangan</label>
+                <select id="bookingLapangan">
+                    <option value="">-- Pilih Lapangan --</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Tanggal</label>
+                <input type="date" id="bookingDate">
+            </div>
+            <div class="form-group">
+                <label>Jam Main</label>
+                <select id="bookingTime">
+                    <option value="">-- Pilih Jam --</option>
+                </select>
+            </div>
+            <button class="btn" onclick="createBooking()">Booking Sekarang</button>
+        </div>
+        
+        <!-- History -->
+        <div class="page" id="historyPage">
+            <h2>Riwayat Pemesanan</h2>
+            <div class="booking-list" id="bookingList"></div>
+        </div>
+        
+        <!-- Halaman Admin -->
+        <div class="page" id="adminPage">
+            <h2>Kelola Lapangan</h2>
+            <h3>Tambah Lapangan Baru</h3>
+            <div class="form-group">
+                <label>Nama Lapangan</label>
+                <input type="text" id="adminNama">
+            </div>
+            <div class="form-group">
+                <label>Tipe Lapangan</label>
+                <input type="text" id="adminTipe">
+            </div>
+            <div class="form-group">
+                <label>Harga</label>
+                <input type="number" id="adminHarga">
+            </div>
+            <button class="btn" onclick="addLapangan()">Tambah Lapangan</button>
+            
+            <h3 style="margin-top: 30px;">Daftar Lapangan</h3>
+            <div id="adminLapanganList"></div>
+        </div>
+    </div>
+
+    <script>
+        // Data tetap 
+        let currentUser = null;
+        let users = [
+            { id: 1, username: 'admin', password: 'admin123', role: 'admin', name: 'Administrator' },
+            { id: 2, username: 'user1', password: 'user123', role: 'user', name: ' Rifiani Tasrifin' }
+        ];
+        
+        let lapangan = [
+            { id: 1, name: 'Lapangan A', type: 'Rumput Sintetis', price: 200000 },
+            { id: 2, name: 'Lapangan B', type: 'Rumput Alami', price: 250000 },
+            { id: 3, name: 'Lapangan C', type: 'Futsal Indoor', price: 150000 }
+        ];
+        
+        let bookings = [];
+        
+        const timeSlots = [
+            '06:00 - 08:00', '08:00 - 10:00', '10:00 - 12:00',
+            '12:00 - 14:00', '14:00 - 16:00', '16:00 - 18:00',
+            '18:00 - 20:00', '20:00 - 22:00'
+        ];
+        
+        // Functions
+        function login() {
+            const username = document.getElementById('loginUsername').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            const user = users.find(u => u.username === username && u.password === password);
+            
+            if (user) {
+                currentUser = user;
+                showPage('homePage');
+                updateNav();
+                loadHome();
+            } else {
+                alert('Username atau password salah!');
+            }
+        }
+        
+        function logout() {
+            currentUser = null;
+            showPage('loginPage');
+            updateNav();
+        }
+        
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+        }
+        
+        function updateNav() {
+            const nav = document.getElementById('nav');
+            
+            if (!currentUser) {
+                nav.innerHTML = '';
+                return;
+            }
+            
+            nav.innerHTML = '';
+            
+            const btnHome = document.createElement('button');
+            btnHome.textContent = 'Beranda';
+            btnHome.onclick = () => { showPage('homePage'); loadHome(); };
+            nav.appendChild(btnHome);
+            
+            const btnBooking = document.createElement('button');
+            btnBooking.textContent = 'Booking';
+            btnBooking.onclick = () => { showPage('bookingPage'); loadBookingForm(); };
+            nav.appendChild(btnBooking);
+            
+            const btnHistory = document.createElement('button');
+            btnHistory.textContent = 'Riwayat';
+            btnHistory.onclick = () => { showPage('historyPage'); loadHistory(); };
+            nav.appendChild(btnHistory);
+            
+            if (currentUser.role === 'admin') {
+                const btnAdmin = document.createElement('button');
+                btnAdmin.textContent = 'Kelola';
+                btnAdmin.onclick = () => { showPage('adminPage'); loadAdmin(); };
+                nav.appendChild(btnAdmin);
+            }
+            
+            //buat jarak
+            const spacer = document.createElement('div');
+            spacer.className = 'nav-spacer';
+            nav.appendChild(spacer);
+            
+            const userInfo = document.createElement('div');
+            userInfo.className = 'user-info';
+            userInfo.textContent = currentUser.role === 'admin' ? 'Admin' : currentUser.name;
+            nav.appendChild(userInfo);
+            
+            const btnLogout = document.createElement('button');
+            btnLogout.className = 'btn-danger';
+            btnLogout.textContent = 'Logout';
+            btnLogout.onclick = logout;
+            nav.appendChild(btnLogout);
+        }
+        
+        function loadHome() {
+            const grid = document.getElementById('lapanganGrid');
+            grid.innerHTML = lapangan.map(l => `
+                <div class="lapangan-card">
+                    <h3>${l.name}</h3>
+                    <p>${l.type}</p>
+                    <div class="price">Rp ${l.price.toLocaleString('id-ID')}</div>
+                    <p>per 2 jam</p>
+                </div>
+            `).join('');
+        }
+        
+        function loadBookingForm() {
+            const select = document.getElementById('bookingLapangan');
+            select.innerHTML = '<option value="">-- Pilih Lapangan --</option>' +
+                lapangan.map(l => `
+                    <option value="${l.id}">${l.name} - ${l.type} (Rp ${l.price.toLocaleString('id-ID')})</option>
+                `).join('');
+            
+            const timeSelect = document.getElementById('bookingTime');
+            timeSelect.innerHTML = '<option value="">-- Pilih Jam --</option>' +
+                timeSlots.map(t => `<option value="${t}">${t}</option>`).join('');
+            
+            document.getElementById('bookingDate').min = new Date().toISOString().split('T')[0];
+        }
+        
+        function createBooking() {
+            const lapanganId = parseInt(document.getElementById('bookingLapangan').value);
+            const date = document.getElementById('bookingDate').value;
+            const time = document.getElementById('bookingTime').value;
+            
+            if (!lapanganId || !date || !time) {
+                alert('Mohon lengkapi semua data!');
+                return;
+            }
+            
+            const isBooked = bookings.find(b => 
+                b.lapanganId === lapanganId && 
+                b.date === date && 
+                b.time === time && 
+                b.status === 'active'
+            );
+            
+            if (isBooked) {
+                alert('Jadwal ini sudah dibooking!');
+                return;
+            }
+            
+            const lap = lapangan.find(l => l.id === lapanganId);
+            
+            bookings.push({
+                id: bookings.length + 1,
+                userId: currentUser.id,
+                userName: currentUser.name,
+                lapanganId: lapanganId,
+                lapanganName: lap.name,
+                date: date,
+                time: time,
+                price: lap.price,
+                status: 'active',
+                bookingDate: new Date().toLocaleDateString('id-ID')
+            });
+            
+            alert('Booking berhasil!');
+            showPage('historyPage');
+            loadHistory();
+        }
+        
+        function loadHistory() {
+            const list = document.getElementById('bookingList');
+            const userBookings = currentUser.role === 'admin' 
+                ? bookings 
+                : bookings.filter(b => b.userId === currentUser.id);
+            
+            if (userBookings.length === 0) {
+                list.innerHTML = '<p>Belum ada riwayat pemesanan</p>';
+                return;
+            }
+            
+            list.innerHTML = userBookings.map(b => `
+                <div class="booking-item">
+                    <h4>${b.lapanganName}</h4>
+                    ${currentUser.role === 'admin' ? `<p>Pemesan: ${b.userName}</p>` : ''}
+                    <p>Tanggal Main: ${new Date(b.date).toLocaleDateString('id-ID')}</p>
+                    <p>Jam: ${b.time}</p>
+                    <p>Harga: Rp ${b.price.toLocaleString('id-ID')}</p>
+                    <p class="${b.status === 'active' ? 'status-active' : 'status-cancelled'}">
+                        Status: ${b.status === 'active' ? 'Aktif' : 'Dibatalkan'}
+                    </p>
+                    ${b.status === 'active' ? `
+                        <button class="btn btn-danger" onclick="cancelBooking(${b.id})">Batalkan</button>
+                    ` : ''}
+                </div>
+            `).join('');
+        }
+        
+        function cancelBooking(id) {
+            if (confirm('Yakin ingin membatalkan booking ini?')) {
+                const booking = bookings.find(b => b.id === id);
+                if (booking) {
+                    booking.status = 'cancelled';
+                    loadHistory();
+                }
+            }
+        }
+        
+        function addLapangan() {
+            const nama = document.getElementById('adminNama').value;
+            const tipe = document.getElementById('adminTipe').value;
+            const harga = parseInt(document.getElementById('adminHarga').value);
+            
+            if (!nama || !tipe || !harga) {
+                alert('Mohon lengkapi semua data!');
+                return;
+            }
+            
+            lapangan.push({
+                id: lapangan.length + 1,
+                name: nama,
+                type: tipe,
+                price: harga
+            });
+            
+            alert('Lapangan berhasil ditambahkan!');
+            document.getElementById('adminNama').value = '';
+            document.getElementById('adminTipe').value = '';
+            document.getElementById('adminHarga').value = '';
+            loadAdmin();
+        }
+        
+        function loadAdmin() {
+            const list = document.getElementById('adminLapanganList');
+            list.innerHTML = lapangan.map(l => `
+                <div class="booking-item">
+                    <h4>${l.name}</h4>
+                    <p>${l.type}</p>
+                    <p>Rp ${l.price.toLocaleString('id-ID')}</p>
+                    <button class="btn btn-danger" onclick="deleteLapangan(${l.id})">Hapus</button>
+                </div>
+            `).join('');
+        }
+        
+        function deleteLapangan(id) {
+            if (confirm('Yakin ingin menghapus lapangan ini?')) {
+                lapangan = lapangan.filter(l => l.id !== id);
+                loadAdmin();
+            }
+        }
+
+        updateNav();
+    </script>
+</body>
+</html>
